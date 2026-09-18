@@ -1,0 +1,79 @@
+# Fly.io configuration for tradetrace
+# Free tier optimized: 3 shared-cpu instances, auto-scaling disabled
+
+app = "tradetrace"
+primary_region = "lhr"  # London (closest to EU markets)
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "3000"
+  ENVIRONMENT = "production"
+  LOG_LEVEL = "info"
+  # Database and services configured via secrets (flyctl secrets set)
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 3000
+
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 25
+    soft_limit = 20
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+[deploy]
+  # Health check
+  [deploy.health_checks.http]
+    interval = "10s"
+    timeout = "5s"
+    grace_period = "5s"
+    method = "get"
+    path = "/api/health"
+
+[metrics]
+  port = 9090
+  path = "/metrics"
+
+# Free tier: 3 shared-cpu-1x instances
+[[vm]]
+  memory = "256mb"
+  cpu_kind = "shared"
+  cpus = 1
+
+[[vm]]
+  memory = "256mb"
+  cpu_kind = "shared"
+  cpus = 1
+  region = "ams"  # Amsterdam
+
+[[vm]]
+  memory = "256mb"
+  cpu_kind = "shared"
+  cpus = 1
+  region = "syd"  # Sydney
+
+[checks]
+  [checks.status]
+    grace_period = "10s"
+    interval = "30s"
+    method = "get"
+    path = "/api/health"
+    timeout = "5s"
+    type = "http"

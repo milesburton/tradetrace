@@ -1,0 +1,46 @@
+name: Deploy to Fly.io
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-fly
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Fly.io
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy to Fly
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          FLY_REGION: lhr
+
+      - name: Post-deploy health check
+        run: |
+          sleep 10
+          curl -f https://tradetrace.fly.dev/api/health || exit 1
+
+      - name: Notify Discord (success)
+        if: success()
+        run: |
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK }} \
+            -H "Content-Type: application/json" \
+            -d '{"content":"✅ tradetrace deployed to Fly.io","embeds":[{"title":"Deployment Success","url":"https://tradetrace.fly.dev"}]}'
+
+      - name: Notify Discord (failure)
+        if: failure()
+        run: |
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK }} \
+            -H "Content-Type: application/json" \
+            -d '{"content":"❌ tradetrace deployment to Fly.io failed"}'

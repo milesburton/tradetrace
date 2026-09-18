@@ -1,20 +1,33 @@
 # tradetrace
 
 > Transparent tradesman reviews with relationship mapping to expose hidden bias and fake endorsements.
+> **Blockchain-immutable reviews on Ethereum + Neo4j relationship graphs + fraud detection network.**
 
 [![CI](https://github.com/milesburton/tradetrace/actions/workflows/ci.yml/badge.svg)](https://github.com/milesburton/tradetrace/actions/workflows/ci.yml)
+[![Deploy to Fly.io](https://github.com/milesburton/tradetrace/actions/workflows/deploy-fly.yml/badge.svg)](https://github.com/milesburton/tradetrace/actions/workflows/deploy-fly.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/demo-tradetrace.fly.dev-blue)](https://tradetrace.fly.dev)
 
 ## Overview
 
-tradetrace builds trust in tradesman reviews by:
+tradetrace builds trust in tradesman reviews through three mechanisms:
 
-- **Exposing relationships**: Visualizing who knows whom to detect planted reviews from family/friends
-- **Aggregating reviews**: Combining data from multiple sources for unbiased ratings
-- **Transparent scoring**: Flagging declared relationships so reviewers can judge credibility
-- **GDPR-compliant**: Handling personal data responsibly with explicit consent
+1. **Blockchain Immutability** — Reviews recorded on Ethereum with Keccak256 hashes, preventing tampering
+2. **Relationship Mapping** — Neo4j graph reveals who knows whom, exposing planted reviews from family/friends
+3. **Transparent Scoring** — Declared relationships flagged so reviewers can judge review credibility
 
-This is a prototype demonstrating core functionality. See [CONTRIBUTING.md](CONTRIBUTING.md) for development standards.
+**Key Features**:
+- ✅ Reviews stored immutably on Ethereum Sepolia testnet
+- ✅ Cryptographic proof of review integrity (hash verification)
+- ✅ Neo4j graph database for relationship mapping and fraud detection
+- ✅ Declared relationships (spouse, friend, family, colleague)
+- ✅ Public blockchain verification (Etherscan integration)
+- ✅ GDPR-compliant personal data handling
+- ✅ Deno/TypeScript production stack with Biome linting
+
+**Public Demo**: https://tradetrace.fly.dev
+
+This is a working prototype. See [CONTRIBUTING.md](CONTRIBUTING.md) for development standards and [DEPLOYMENT.md](docs/DEPLOYMENT.md) for hosting details.
 
 ## Quick Start
 
@@ -137,25 +150,34 @@ All code follows veta-trading-platform standards:
 
 ## Roadmap
 
-### Phase 1 (Current)
-- [x] Basic review submission
-- [x] User-declared relationships
+### Phase 1 (✅ Complete)
+- [x] Basic review submission + Postgres storage
+- [x] User-declared relationships + Neo4j graph
 - [x] Graph visualization API
-- [x] Local Docker setup
-- [ ] Frontend (React + Tailwind)
-- [ ] Production Docker Compose
+- [x] Ethereum blockchain immutability (Keccak256 hashes)
+- [x] Local Docker development setup
+- [x] Production-grade code quality (Biome, Zod, Deno)
+- [x] Fly.io deployment (free tier)
+- [x] GitHub Actions CI/CD
 
-### Phase 2
-- [ ] External review scraping (via licensed APIs)
-- [ ] Relationship inference (spouse/friend detection)
+### Phase 2 (Current)
+- [ ] Frontend UI (React + Tailwind)
+- [ ] Blockchain verification page (Etherscan integration)
+- [ ] Review dispute resolution
 - [ ] Media uploads (images, audio)
-- [ ] Fly.io deployment
 
 ### Phase 3
-- [ ] LLM-powered review analysis
-- [ ] Automated fraud scoring
+- [ ] External review scraping (licensed APIs: Google, Trustpilot)
+- [ ] Relationship inference (spouse/friend ML detection)
+- [ ] LLM-powered review analysis (Claude API)
+- [ ] Automated fraud scoring dashboard
 - [ ] GDPR compliance audit & DPIA
-- [ ] Advanced analytics dashboard
+
+### Phase 4
+- [ ] Polygon/Arbitrum layer 2 scaling (cheaper gas)
+- [ ] IPFS integration for media storage
+- [ ] Advanced analytics + heatmaps
+- [ ] Mobile app (React Native)
 
 ## Testing
 
@@ -171,7 +193,39 @@ deno task test
 
 ## Deployment
 
-See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for production deployment instructions.
+**tradetrace is deployed on Fly.io free tier** at https://tradetrace.fly.dev
+
+See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for setup, configuration, and scaling details.
+
+### Quick Deploy
+
+```bash
+# 1. Install Flyctl
+curl -L https://fly.io/install.sh | sh
+
+# 2. Login
+flyctl auth login
+
+# 3. Deploy
+cd tradetrace
+flyctl launch --name tradetrace
+flyctl secrets set DB_PASSWORD=... NEO4J_PASSWORD=... INFURA_KEY=...
+flyctl deploy
+
+# 3. View live
+open https://tradetrace.fly.dev
+```
+
+**Free Tier Specs**:
+- 3 shared CPU instances across London, Amsterdam, Sydney
+- 3GB Postgres database
+- Neo4j community edition (self-hosted)
+- 160GB bandwidth/month
+- Cost: **$0/month**
+
+### GitHub CI/CD
+
+Push to `main` → GitHub Actions automatically deploys to Fly.io (see [deploy-fly.yml](.github/workflows/deploy-fly.yml))
 
 ## Security
 
