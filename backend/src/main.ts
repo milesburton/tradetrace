@@ -1,5 +1,6 @@
 import { initializeDb, closeDb } from "./lib/db.ts";
 import { initializeGraph, closeGraph } from "./lib/graph.ts";
+import { initializeBlockchain } from "./lib/blockchain.ts";
 import { logger } from "./lib/logger.ts";
 import { errorResponse } from "./lib/http.ts";
 import {
@@ -8,7 +9,7 @@ import {
   handleCreateTradesman,
   handleGetTradersmanReviews,
 } from "./routes/tradesmen.ts";
-import { handleCreateReview, handleGetReviews } from "./routes/reviews.ts";
+import { handleCreateReview, handleGetReviews, handleGetReviewBlockchainStatus } from "./routes/reviews.ts";
 import { handleCreateRelationship, handleGetTradersmanGraph, handleHealthCheck } from "./routes/graph.ts";
 
 const port = parseInt(Deno.env.get("PORT") || "3000");
@@ -16,9 +17,15 @@ const dbUrl = Deno.env.get("DATABASE_URL") || "postgresql://postgres:password@lo
 const neo4jUri = Deno.env.get("NEO4J_URI") || "bolt://localhost:7687";
 const neo4jUser = Deno.env.get("NEO4J_USER") || "neo4j";
 const neo4jPassword = Deno.env.get("NEO4J_PASSWORD") || "password";
+const ethContractAddress = Deno.env.get("ETH_CONTRACT_ADDRESS") || "";
+const ethRpcUrl = Deno.env.get("ETH_RPC_URL") || "https://sepolia.infura.io/v3/YOUR_INFURA_KEY";
+const ethPrivateKey = Deno.env.get("ETH_PRIVATE_KEY") || "";
 
 initializeDb(dbUrl);
 initializeGraph(neo4jUri, neo4jUser, neo4jPassword);
+if (ethContractAddress) {
+  initializeBlockchain(ethContractAddress, ethRpcUrl, ethPrivateKey);
+}
 
 const handler = async (request: Request): Promise<Response> => {
   const url = new URL(request.url);
@@ -66,6 +73,12 @@ const handler = async (request: Request): Promise<Response> => {
 
   if (pathname === "/api/relationships" && request.method === "POST") {
     return await handleCreateRelationship(request);
+  }
+
+  const blockchainStatusMatch = pathname.match(/^\/api\/reviews\/(\d+)\/blockchain$/);
+  if (blockchainStatusMatch && request.method === "GET") {
+    const reviewId = parseInt(blockchainStatusMatch[1]);
+    return await handleGetReviewBlockchainStatus(reviewId);
   }
 
   return errorResponse("Not found", 404);
