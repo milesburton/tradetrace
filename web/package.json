@@ -1,0 +1,19 @@
+{
+  "name": "tradetrace-web",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "build": "bun build src/index.ts --outdir dist",
+    "start": "bun dist/index.js"
+  },
+  "dependencies": {
+    "elysia": "^1.0",
+    "@elysiajs/cors": "^1.0",
+    "pg": "^8.11.3",
+    "axios": "^1.6.7"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  }
+}

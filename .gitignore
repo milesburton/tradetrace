@@ -1,0 +1,32 @@
+# Node/Bun
+node_modules/
+dist/
+.bun/
+*.lock
+bun.lockb
+
+# Java
+target/
+*.class
+*.jar
+*.log
+.classpath
+.project
+.settings/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Docker
+.env.local
+.env.docker
+
+# Neo4j/Postgres
+data/
+postgres_data/
+neo4j_data/
