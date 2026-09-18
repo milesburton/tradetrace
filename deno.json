@@ -1,0 +1,20 @@
+{
+  "imports": {
+    "std/": "https://deno.land/std@0.208.0/",
+    "fresh": "https://deno.land/x/fresh@1.6.0/",
+    "preact": "https://esm.sh/preact@10.19.6",
+    "preact/": "https://esm.sh/preact@10.19.6/",
+    "zod": "https://deno.land/x/zod@v3.22.4/mod.ts",
+    "postgres": "https://deno.land/x/postgres@v0.17.0/mod.ts",
+    "neo4j": "https://deno.land/x/neo4j@5.0.0-rc.4/mod.ts"
+  },
+  "tasks": {
+    "check": "deno check --config deno.json backend/src/main.ts backend/src/lib/db.ts backend/src/lib/graph.ts",
+    "test": "deno test --allow-all backend/src/tests/",
+    "lint": "deno lint --config biome.json",
+    "fmt": "deno fmt --config biome.json",
+    "dev": "deno run --allow-all --allow-net --allow-env --allow-read backend/src/main.ts",
+    "start": "deno run --allow-all --allow-net --allow-env --allow-read backend/src/main.ts"
+  },
+  "nodeModulesDir": "auto"
+}
